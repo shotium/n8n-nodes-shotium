@@ -9,8 +9,69 @@ import type {
 	INodeTypeDescription,
 } from 'n8n-workflow';
 import { NodeConnectionTypes, NodeOperationError } from 'n8n-workflow';
+import { createHmac } from 'node:crypto';
 
 const BASE_URL = 'https://api.shotium.com/v1';
+
+// Signing helpers mirror shotium's shared/signed-url.ts — the server verifies
+// against the exact same canonicalization, so any drift breaks signatures.
+function rfc3986(value: string): string {
+	return encodeURIComponent(value).replace(
+		/[!'()*]/g,
+		(c) => `%${c.charCodeAt(0).toString(16).toUpperCase()}`,
+	);
+}
+
+export function canonicalQuery(params: Record<string, string>): string {
+	return Object.entries(params)
+		.filter(([key]) => key !== 'sig')
+		.sort(([a], [b]) => (a < b ? -1 : a > b ? 1 : 0))
+		.map(([key, value]) => `${rfc3986(key)}=${rfc3986(value)}`)
+		.join('&');
+}
+
+export function signQuery(params: Record<string, string>, secret: string): string {
+	return createHmac('sha256', secret).update(canonicalQuery(params)).digest('hex');
+}
+
+const TEMPLATE_PARAM_MAP: Record<string, Array<[nodeParam: string, apiParam: string]>> = {
+	minimal: [['subtitle', 'subtitle']],
+	blog: [
+		['author', 'author'],
+		['siteName', 'site_name'],
+		['tag', 'tag'],
+		['avatarUrl', 'avatar_url'],
+	],
+	product: [
+		['brand', 'brand'],
+		['price', 'price'],
+		['description', 'description'],
+		['imageUrl', 'image_url'],
+	],
+	podcast: [
+		['showName', 'show_name'],
+		['episode', 'episode'],
+		['coverUrl', 'cover_url'],
+	],
+	event: [
+		['date', 'date'],
+		['location', 'location'],
+		['organizer', 'organizer'],
+	],
+};
+
+function collectTemplateParams(
+	ctx: IExecuteFunctions,
+	template: string,
+	itemIndex: number,
+): Record<string, string> {
+	const out: Record<string, string> = {};
+	for (const [nodeParam, apiParam] of TEMPLATE_PARAM_MAP[template] ?? []) {
+		const value = ctx.getNodeParameter(nodeParam, itemIndex, '') as string;
+		if (value !== '') out[apiParam] = value;
+	}
+	return out;
+}
 
 export class Shotium implements INodeType {
 	description: INodeTypeDescription = {
@@ -46,6 +107,13 @@ export class Shotium implements INodeType {
 						value: 'ogImage',
 						action: 'Generate an open graph image from a template',
 						description: 'Render a 1200×630 social card from one of five typed templates',
+					},
+					{
+						name: 'Generate Signed URL',
+						value: 'signedUrl',
+						action: 'Generate a signed OG image URL',
+						description:
+							'Build an HMAC-signed OG image link safe to embed in public HTML — computed locally, no render billed',
 					},
 					{
 						name: 'Take Screenshot',
@@ -159,7 +227,7 @@ export class Shotium implements INodeType {
 				description: 'Which OG image template to render',
 				displayOptions: {
 					show: {
-						operation: ['ogImage'],
+						operation: ['ogImage', 'signedUrl'],
 					},
 				},
 			},
@@ -172,7 +240,7 @@ export class Shotium implements INodeType {
 				description: 'Main title text of the OG image',
 				displayOptions: {
 					show: {
-						operation: ['ogImage'],
+						operation: ['ogImage', 'signedUrl'],
 					},
 				},
 			},
@@ -184,7 +252,7 @@ export class Shotium implements INodeType {
 				description: 'Secondary line under the title',
 				displayOptions: {
 					show: {
-						operation: ['ogImage'],
+						operation: ['ogImage', 'signedUrl'],
 						template: ['minimal'],
 					},
 				},
@@ -197,7 +265,7 @@ export class Shotium implements INodeType {
 				description: 'Author name shown on the card',
 				displayOptions: {
 					show: {
-						operation: ['ogImage'],
+						operation: ['ogImage', 'signedUrl'],
 						template: ['blog'],
 					},
 				},
@@ -210,7 +278,7 @@ export class Shotium implements INodeType {
 				description: 'Site or publication name',
 				displayOptions: {
 					show: {
-						operation: ['ogImage'],
+						operation: ['ogImage', 'signedUrl'],
 						template: ['blog'],
 					},
 				},
@@ -223,7 +291,7 @@ export class Shotium implements INodeType {
 				description: 'Short category tag, e.g. Engineering',
 				displayOptions: {
 					show: {
-						operation: ['ogImage'],
+						operation: ['ogImage', 'signedUrl'],
 						template: ['blog'],
 					},
 				},
@@ -236,7 +304,7 @@ export class Shotium implements INodeType {
 				description: 'Public URL of the author avatar image',
 				displayOptions: {
 					show: {
-						operation: ['ogImage'],
+						operation: ['ogImage', 'signedUrl'],
 						template: ['blog'],
 					},
 				},
@@ -249,7 +317,7 @@ export class Shotium implements INodeType {
 				description: 'Brand or company name',
 				displayOptions: {
 					show: {
-						operation: ['ogImage'],
+						operation: ['ogImage', 'signedUrl'],
 						template: ['product'],
 					},
 				},
@@ -262,7 +330,7 @@ export class Shotium implements INodeType {
 				description: 'Price text shown in the price pill, e.g. From $15/mo',
 				displayOptions: {
 					show: {
-						operation: ['ogImage'],
+						operation: ['ogImage', 'signedUrl'],
 						template: ['product'],
 					},
 				},
@@ -275,7 +343,7 @@ export class Shotium implements INodeType {
 				description: 'Short product description',
 				displayOptions: {
 					show: {
-						operation: ['ogImage'],
+						operation: ['ogImage', 'signedUrl'],
 						template: ['product'],
 					},
 				},
@@ -288,7 +356,7 @@ export class Shotium implements INodeType {
 				description: 'Public URL of the product image',
 				displayOptions: {
 					show: {
-						operation: ['ogImage'],
+						operation: ['ogImage', 'signedUrl'],
 						template: ['product'],
 					},
 				},
@@ -301,7 +369,7 @@ export class Shotium implements INodeType {
 				description: 'Podcast show name',
 				displayOptions: {
 					show: {
-						operation: ['ogImage'],
+						operation: ['ogImage', 'signedUrl'],
 						template: ['podcast'],
 					},
 				},
@@ -314,7 +382,7 @@ export class Shotium implements INodeType {
 				description: 'Episode label, e.g. EP 42',
 				displayOptions: {
 					show: {
-						operation: ['ogImage'],
+						operation: ['ogImage', 'signedUrl'],
 						template: ['podcast'],
 					},
 				},
@@ -327,7 +395,7 @@ export class Shotium implements INodeType {
 				description: 'Public URL of the episode or show cover art',
 				displayOptions: {
 					show: {
-						operation: ['ogImage'],
+						operation: ['ogImage', 'signedUrl'],
 						template: ['podcast'],
 					},
 				},
@@ -340,7 +408,7 @@ export class Shotium implements INodeType {
 				description: 'Event date text, e.g. Sep 12, 2026',
 				displayOptions: {
 					show: {
-						operation: ['ogImage'],
+						operation: ['ogImage', 'signedUrl'],
 						template: ['event'],
 					},
 				},
@@ -353,7 +421,7 @@ export class Shotium implements INodeType {
 				description: 'Event location text',
 				displayOptions: {
 					show: {
-						operation: ['ogImage'],
+						operation: ['ogImage', 'signedUrl'],
 						template: ['event'],
 					},
 				},
@@ -366,7 +434,7 @@ export class Shotium implements INodeType {
 				description: 'Event organizer name',
 				displayOptions: {
 					show: {
-						operation: ['ogImage'],
+						operation: ['ogImage', 'signedUrl'],
 						template: ['event'],
 					},
 				},
@@ -383,7 +451,7 @@ export class Shotium implements INodeType {
 				description: 'Image format of the rendered OG image',
 				displayOptions: {
 					show: {
-						operation: ['ogImage'],
+						operation: ['ogImage', 'signedUrl'],
 					},
 				},
 			},
@@ -397,6 +465,11 @@ export class Shotium implements INodeType {
 				type: 'string',
 				default: 'data',
 				description: 'The name of the output binary field to put the image in',
+				displayOptions: {
+					show: {
+						operation: ['ogImage', 'screenshot'],
+					},
+				},
 			},
 		],
 	};
@@ -434,9 +507,48 @@ export class Shotium implements INodeType {
 		for (let itemIndex = 0; itemIndex < items.length; itemIndex++) {
 			try {
 				const operation = this.getNodeParameter('operation', itemIndex) as string;
+
+				if (operation === 'signedUrl') {
+					// Pure local HMAC — no API call, no render billed.
+					const template = this.getNodeParameter('template', itemIndex) as string;
+					const title = this.getNodeParameter('title', itemIndex) as string;
+					const ogFormat = this.getNodeParameter('ogFormat', itemIndex, 'png') as string;
+					const credentials = await this.getCredentials('shotiumApi');
+					const signingSecret = (credentials.signingSecret as string) || '';
+					const uid = (credentials.uid as string) || '';
+					if (!signingSecret || !uid) {
+						throw new NodeOperationError(
+							this.getNode(),
+							'Generate Signed URL requires the Signing Secret and User ID (UID) fields in your Shotium API credential — both are issued together with your API key',
+							{ itemIndex },
+						);
+					}
+
+					const params: Record<string, string> = {
+						template,
+						title,
+						uid,
+						...collectTemplateParams(this, template, itemIndex),
+					};
+					if (ogFormat !== 'png') params.format = ogFormat;
+
+					const canonical = canonicalQuery(params);
+					const sig = signQuery(params, signingSecret);
+					returnData.push({
+						json: {
+							operation,
+							template,
+							url: `${BASE_URL}/og-image?${canonical}&sig=${sig}`,
+						},
+						pairedItem: itemIndex,
+					});
+					continue;
+				}
+
 				const binaryPropertyName = this.getNodeParameter(
 					'binaryPropertyName',
 					itemIndex,
+					'data',
 				) as string;
 
 				let body: Buffer;
@@ -476,32 +588,10 @@ export class Shotium implements INodeType {
 					const title = this.getNodeParameter('title', itemIndex) as string;
 					format = this.getNodeParameter('ogFormat', itemIndex, 'png') as string;
 
-					const params: IDataObject = { title };
-					const collect = (nodeParam: string, apiParam: string) => {
-						const value = this.getNodeParameter(nodeParam, itemIndex, '') as string;
-						if (value !== '') params[apiParam] = value;
+					const params: IDataObject = {
+						title,
+						...collectTemplateParams(this, template, itemIndex),
 					};
-					if (template === 'minimal') {
-						collect('subtitle', 'subtitle');
-					} else if (template === 'blog') {
-						collect('author', 'author');
-						collect('siteName', 'site_name');
-						collect('tag', 'tag');
-						collect('avatarUrl', 'avatar_url');
-					} else if (template === 'product') {
-						collect('brand', 'brand');
-						collect('price', 'price');
-						collect('description', 'description');
-						collect('imageUrl', 'image_url');
-					} else if (template === 'podcast') {
-						collect('showName', 'show_name');
-						collect('episode', 'episode');
-						collect('coverUrl', 'cover_url');
-					} else if (template === 'event') {
-						collect('date', 'date');
-						collect('location', 'location');
-						collect('organizer', 'organizer');
-					}
 
 					const response = (await this.helpers.httpRequestWithAuthentication.call(
 						this,

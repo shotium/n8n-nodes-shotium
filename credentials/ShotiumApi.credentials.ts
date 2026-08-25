@@ -30,6 +30,25 @@ export class ShotiumApi implements ICredentialType {
 			description:
 				'Your Shotium API key (starts with sk_live_). Create one on your account page at shotium.com/account.',
 		},
+		{
+			displayName: 'Signing Secret',
+			name: 'signingSecret',
+			type: 'string',
+			typeOptions: {
+				password: true,
+			},
+			default: '',
+			description:
+				'Only needed for the Generate Signed URL operation. Issued together with your API key.',
+		},
+		{
+			displayName: 'User ID (UID)',
+			name: 'uid',
+			type: 'string',
+			default: '',
+			description:
+				'Only needed for the Generate Signed URL operation. Issued together with your API key.',
+		},
 	];
 
 	authenticate: IAuthenticateGeneric = {

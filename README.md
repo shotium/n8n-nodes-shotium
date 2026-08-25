@@ -29,14 +29,18 @@ Package name: `n8n-nodes-shotium`
 - **Generate OG Image** — render a 1200×630 social card from one of five templates
   - Templates: Blog, Product, Podcast, Event, Minimal — each with typed fields
   - Formats: PNG, JPEG
+- **Generate Signed URL** — build an HMAC-signed OG image link safe to embed in public HTML
+  - Computed locally in the node: no API call, no render billed
+  - The image renders on first request and updates whenever the signed parameters change; CDN edge hits are free
+  - Requires the Signing Secret and UID fields in your credential
 
-Both operations output the image as **binary data** (default field: `data`), ready to pipe into any downstream node — upload to S3, attach to email, send via Telegram, write to disk, and so on.
+The two render operations output the image as **binary data** (default field: `data`), ready to pipe into any downstream node — upload to S3, attach to email, send via Telegram, write to disk, and so on. Generate Signed URL outputs JSON with a `url` field.
 
 ## Credentials
 
 1. Sign in at [shotium.com/account](https://shotium.com/account) (GitHub sign-in, 100 free render credits — no credit card).
-2. Create an API key. The key (`sk_live_…`) is shown **once**.
-3. In n8n, create a **Shotium API** credential and paste the key.
+2. Create an API key. The key (`sk_live_…`), your signing secret and your UID are shown **once**, together.
+3. In n8n, create a **Shotium API** credential and paste the key. The signing secret and UID are only needed for the Generate Signed URL operation — leave them empty otherwise.
 
 Note: there is no zero-cost validation endpoint — the credential is verified on first execution. A render is billed only when an image is successfully returned; failed renders are never billed.
 
@@ -49,12 +53,12 @@ Requires n8n version 1.0 or above. Built and tested against the current n8n rele
 Typical patterns:
 
 - **Nightly site archive**: Schedule Trigger → Shotium (Take Screenshot, full page) → S3/Drive upload
-- **OG images that follow your data**: new blog post webhook → Shotium (Generate OG Image, Blog template with expressions) → upload to your CDN
+- **OG images that follow your data**: new blog post webhook → Shotium (Generate Signed URL, Blog template with expressions) → write the URL into your CMS's og:image field — the image updates whenever the signed parameters change
 - **Visual monitoring**: Cron → Screenshot of a competitor page → image diff → alert
 
 Rate limit is 60 requests/minute per API key. When quota and credits run out the API returns `429 quota_exceeded` — nothing auto-charges.
 
-For build-time or signed-URL embedding use cases (OG images in `<meta>` tags with edge caching), see the [Shotium docs](https://shotium.com/docs) — those flows don't need n8n at all.
+For build-time embedding without n8n, see the [Shotium docs](https://shotium.com/docs).
 
 ## Resources
 
@@ -66,4 +70,4 @@ For build-time or signed-URL embedding use cases (OG images in `<meta>` tags wit
 
 ## Version history
 
-- **0.1.0** — Initial release: Take Screenshot and Generate OG Image operations with binary output.
+- **0.1.0** — Initial release: Take Screenshot, Generate OG Image and Generate Signed URL operations.

@@ -1,5 +1,6 @@
 import type {
 	IAuthenticateGeneric,
+	ICredentialTestRequest,
 	ICredentialType,
 	Icon,
 	INodeProperties,
@@ -57,6 +58,14 @@ export class ShotiumApi implements ICredentialType {
 			headers: {
 				Authorization: '=Bearer {{$credentials.apiKey}}',
 			},
+		},
+	};
+
+	// GET /v1/me validates the key without billing a render.
+	test: ICredentialTestRequest = {
+		request: {
+			baseURL: 'https://api.shotium.com/v1',
+			url: '/me',
 		},
 	};
 }

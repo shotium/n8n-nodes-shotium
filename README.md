@@ -70,4 +70,5 @@ For build-time embedding without n8n, see the [Shotium docs](https://shotium.com
 
 ## Version history
 
+- **0.1.1** — Credential verification moved to the dedicated `GET /v1/me` endpoint (declarative credential test).
 - **0.1.0** — Initial release: Take Screenshot, Generate OG Image and Generate Signed URL operations.

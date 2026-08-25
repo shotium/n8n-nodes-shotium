@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.1.1
+
+- Credential verification now uses the dedicated `GET /v1/me` endpoint via a declarative credential test (required by n8n's verification vetting) — still free, never bills a render
+
 ## 0.1.0
 
 - Initial release

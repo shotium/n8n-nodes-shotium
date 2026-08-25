@@ -1,9 +1,6 @@
 import type {
-	ICredentialsDecrypted,
-	ICredentialTestFunctions,
 	IDataObject,
 	IExecuteFunctions,
-	INodeCredentialTestResult,
 	INodeExecutionData,
 	INodeType,
 	INodeTypeDescription,
@@ -92,7 +89,6 @@ export class Shotium implements INodeType {
 			{
 				name: 'shotiumApi',
 				required: true,
-				testedBy: 'shotiumApiTest',
 			},
 		],
 		properties: [
@@ -472,32 +468,6 @@ export class Shotium implements INodeType {
 				},
 			},
 		],
-	};
-
-	methods = {
-		credentialTest: {
-			// Zero-cost key check: the API validates auth before params, so a
-			// parameterless request proves the key without billing a render.
-			async shotiumApiTest(
-				this: ICredentialTestFunctions,
-				credential: ICredentialsDecrypted,
-			): Promise<INodeCredentialTestResult> {
-				const apiKey = credential.data?.apiKey as string | undefined;
-				try {
-					// Native fetch: ICredentialTestFunctions helpers only expose the
-					// deprecated `request`, and a status check needs no n8n plumbing.
-					const response = await fetch(`${BASE_URL}/screenshot`, {
-						headers: { Authorization: `Bearer ${apiKey ?? ''}` },
-					});
-					if (response.status === 401) {
-						return { status: 'Error', message: 'Invalid API key' };
-					}
-					return { status: 'OK', message: 'Authentication successful' };
-				} catch {
-					return { status: 'Error', message: 'Could not reach the Shotium API' };
-				}
-			},
-		},
 	};
 
 	async execute(this: IExecuteFunctions): Promise<INodeExecutionData[][]> {

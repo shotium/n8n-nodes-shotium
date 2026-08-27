@@ -96,16 +96,18 @@ the npm tarball ships stale files:
 5. Confirm `package.json`, `package-lock.json`, `CHANGELOG.md`, and `README.md`
   all contain the exact release version
 6. Commit and `git push origin main`
-7. `git tag <version> && git push origin <version>` — this triggers the npm publish
-8. Verify that tag's Publish run succeeded:
+7. Confirm main CI is green for the release commit before tagging:
+  `GH_PAGER=cat gh run list --workflow ci.yml --branch main --limit 1`
+8. `git tag <version> && git push origin <version>` — this triggers the npm publish
+9. Verify that tag's Publish run succeeded:
   `GH_PAGER=cat gh run list --workflow publish.yml --branch <version> --limit 1`
-9. Verify npm published that exact version:
+10. Verify npm published that exact version:
   `npm view n8n-nodes-shotium@<version> version`
-10. Create the GitHub release (body = the CHANGELOG entry for this version):
+11. Create the GitHub release (body = the CHANGELOG entry for this version):
    `gh release create <version> --title <version> --notes '<changelog bullets>'`
-11. Verify the GitHub release exists:
+12. Verify the GitHub release exists:
    `GH_PAGER=cat gh release view <version>`
-12. If this release addresses n8n verification feedback, reply to the review thread
+13. If this release addresses n8n verification feedback, reply to the review thread
 
 ## Context-specific docs
 Load these before working on the relevant area:

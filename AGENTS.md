@@ -109,6 +109,20 @@ the npm tarball ships stale files:
    `GH_PAGER=cat gh release view <version>`
 13. If this release addresses n8n verification feedback, reply to the review thread
 
+## When verification is granted
+
+Verification opens this node to n8n Cloud, which is the point where a
+no-code audience can reach Shotium for the first time. Two things in the
+main `shotium` repo are waiting on that event:
+
+- **Add Google OAuth sign-in.** Today sign-in is GitHub only, which suits
+  developers but not the workflow-automation crowd. The decision, the
+  trigger and the account-linking caveat are recorded in
+  `docs/adr/0006-waffo-pancake-and-refund-averse-pricing.md` → 注册与账户.
+- **Update the n8n blog post.** `content/blog/how-to-automate-og-images-in-n8n.md`
+  (scheduled 2026-09-02) says the node is "submitted for verification"; if
+  verification lands, correct that sentence and bump `dateModified`.
+
 ## Context-specific docs
 Load these before working on the relevant area:
 

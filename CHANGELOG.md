@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.1.2
+
+- Codex `node` field now uses the fully-qualified identifier `n8n-nodes-shotium.shotium` (n8n verification requirement)
+- Removed unsupported `Developer Tools` codex category — `Development` already covers it
+
 ## 0.1.1
 
 - Credential verification now uses the dedicated `GET /v1/me` endpoint via a declarative credential test (required by n8n's verification vetting) — still free, never bills a render

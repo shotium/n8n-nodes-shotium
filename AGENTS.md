@@ -81,6 +81,24 @@ project _may_ contain example nodes and/or credentials that need to be
   CHANGELOG.md** in the root of the repository
 - Read `.agents/workflow.md` for more info
 
+## Release checklist
+Publishing is automated: pushing a version tag (`*.*.*`, no `v` prefix)
+triggers `.github/workflows/publish.yml`, which publishes to npm with
+provenance. **Never** run `npm run release` locally. Follow these steps in
+order — everything must be committed **before** the tag is pushed, otherwise
+the npm tarball ships stale files:
+
+1. Bump `version` in `package.json`
+2. Add the new version entry to `CHANGELOG.md`
+3. Add the new version entry to `README.md` → `## Version history`
+4. `npm run lint && npm run build` pass locally
+5. Commit and `git push origin main`
+6. `git tag <version> && git push origin <version>` — this triggers the npm publish
+7. Verify the Publish workflow succeeded: `GH_PAGER=cat gh run list --workflow publish.yml --limit 1`
+8. Create the GitHub release (body = the CHANGELOG entry for this version):
+   `gh release create <version> --title <version> --notes '<changelog bullets>'`
+9. If this release addresses n8n verification feedback, reply to the review thread
+
 ## Context-specific docs
 Load these before working on the relevant area:
 

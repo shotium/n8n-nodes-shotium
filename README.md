@@ -42,7 +42,7 @@ The two render operations output the image as **binary data** (default field: `d
 2. Create an API key. The key (`sk_live_…`), your signing secret and your UID are shown **once**, together.
 3. In n8n, create a **Shotium API** credential and paste the key. The signing secret and UID are only needed for the Generate Signed URL operation — leave them empty otherwise.
 
-Note: there is no zero-cost validation endpoint — the credential is verified on first execution. A render is billed only when an image is successfully returned; failed renders are never billed.
+Credential validation calls `GET /v1/me` and costs no render credits. A render is billed only when an image is successfully returned; failed renders are never billed.
 
 ## Compatibility
 
@@ -70,6 +70,7 @@ For build-time embedding without n8n, see the [Shotium docs](https://shotium.com
 
 ## Version history
 
+- **0.1.3** — Corrected credential documentation and hardened the tag-driven OIDC publishing workflow with release metadata checks.
 - **0.1.2** — Codex fixes for n8n verification: fully-qualified `node` identifier, removed unsupported `Developer Tools` category.
 - **0.1.1** — Credential verification moved to the dedicated `GET /v1/me` endpoint (declarative credential test).
 - **0.1.0** — Initial release: Take Screenshot, Generate OG Image and Generate Signed URL operations.

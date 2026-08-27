@@ -88,16 +88,24 @@ provenance. **Never** run `npm run release` locally. Follow these steps in
 order — everything must be committed **before** the tag is pushed, otherwise
 the npm tarball ships stale files:
 
-1. Bump `version` in `package.json`
+1. Run `npm version <version> --no-git-tag-version` to update `package.json`
+  and `package-lock.json` together
 2. Add the new version entry to `CHANGELOG.md`
 3. Add the new version entry to `README.md` → `## Version history`
 4. `npm run lint && npm run build` pass locally
-5. Commit and `git push origin main`
-6. `git tag <version> && git push origin <version>` — this triggers the npm publish
-7. Verify the Publish workflow succeeded: `GH_PAGER=cat gh run list --workflow publish.yml --limit 1`
-8. Create the GitHub release (body = the CHANGELOG entry for this version):
+5. Confirm `package.json`, `package-lock.json`, `CHANGELOG.md`, and `README.md`
+  all contain the exact release version
+6. Commit and `git push origin main`
+7. `git tag <version> && git push origin <version>` — this triggers the npm publish
+8. Verify that tag's Publish run succeeded:
+  `GH_PAGER=cat gh run list --workflow publish.yml --branch <version> --limit 1`
+9. Verify npm published that exact version:
+  `npm view n8n-nodes-shotium@<version> version`
+10. Create the GitHub release (body = the CHANGELOG entry for this version):
    `gh release create <version> --title <version> --notes '<changelog bullets>'`
-9. If this release addresses n8n verification feedback, reply to the review thread
+11. Verify the GitHub release exists:
+   `GH_PAGER=cat gh release view <version>`
+12. If this release addresses n8n verification feedback, reply to the review thread
 
 ## Context-specific docs
 Load these before working on the relevant area:

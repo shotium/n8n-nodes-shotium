@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.1.3
+
+- Corrected credential documentation to reflect free validation through `GET /v1/me`
+- Hardened tag-driven GitHub Actions publishing with OIDC-only authentication and exact release metadata checks
+- Documented the complete maintenance release checklist and synchronized package lock versions
+
 ## 0.1.2
 
 - Codex `node` field now uses the fully-qualified identifier `n8n-nodes-shotium.shotium` (n8n verification requirement)

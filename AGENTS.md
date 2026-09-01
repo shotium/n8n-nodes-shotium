@@ -112,16 +112,15 @@ the npm tarball ships stale files:
 ## When verification is granted
 
 Verification opens this node to n8n Cloud, which is the point where a
-no-code audience can reach Shotium for the first time. Two things in the
-main `shotium` repo are waiting on that event:
+no-code audience can reach Shotium for the first time. One thing in the
+main `shotium` repo is still waiting on that event:
 
-- **Add Google OAuth sign-in.** Today sign-in is GitHub only, which suits
-  developers but not the workflow-automation crowd. The decision, the
-  trigger and the account-linking caveat are recorded in
-  `docs/adr/0006-waffo-pancake-and-refund-averse-pricing.md` → 注册与账户.
 - **Update the n8n blog post.** `content/blog/how-to-automate-og-images-in-n8n.md`
   (scheduled 2026-09-02) says the node is "submitted for verification"; if
   verification lands, correct that sentence and bump `dateModified`.
+
+Google OAuth sign-in shipped 2026-08-29 (`server/api/auth/google.get.ts`)
+ahead of verification, so it's no longer gated on this event.
 
 ## Context-specific docs
 Load these before working on the relevant area:

@@ -109,18 +109,44 @@ the npm tarball ships stale files:
    `GH_PAGER=cat gh release view <version>`
 13. If this release addresses n8n verification feedback, reply to the review thread
 
-## When verification is granted
+## Verification timeline and what it unblocks
 
-Verification opens this node to n8n Cloud, which is the point where a
-no-code audience can reach Shotium for the first time. One thing in the
-main `shotium` repo is still waiting on that event:
+n8n approved the package on 2026-09-04. Approval and Cloud availability are
+two separate events, and nearly all the follow-up work hangs off the second:
 
-- **Update the n8n blog post.** `content/blog/how-to-automate-og-images-in-n8n.md`
-  (scheduled 2026-09-02) says the node is "submitted for verification"; if
-  verification lands, correct that sentence and bump `dateModified`.
+- **Approved (2026-09-04)** — Creator Portal status is "Launch Scheduled".
+  The node is not installable on n8n Cloud yet.
+- **Live (within 14 days of approval)** — n8n ships verified nodes in
+  release batches and emails again once ours lands. Only then does Shotium
+  appear in a Cloud user's nodes panel.
+- **Integrations page (2-4 weeks after approval)** — n8n builds a dedicated
+  page for the node on n8n.io, populated from the Node Details form in the
+  Creator Portal. Keep that form current; it is the only copy we control
+  there.
 
-Google OAuth sign-in shipped 2026-08-29 (`server/api/auth/google.get.ts`)
-ahead of verification, so it's no longer gated on this event.
+Waiting on the *live* email, not on approval — announcing Cloud
+availability early sends people to a nodes panel with nothing in it:
+
+- **Main repo copy still says "submitted for verification"** in
+  `content/blog/how-to-automate-og-images-in-n8n.md` (published 2026-09-02;
+  both the `faqs` entry and the "What you'll need" list),
+  `app/pages/integrations/n8n.vue` (the `faqs` entry and the paragraph
+  closing the install section), and `.agents/product-marketing.md`. Fix all
+  of them in one pass and bump the post's `dateModified`.
+- **Changelog entry** in `app/pages/changelog.vue` — Cloud installability is
+  a user-visible change.
+- **Release 0.1.4.** n8n monitors npm and propagates new versions
+  automatically, pending a quick re-review, so releasing is safe once we are
+  live. Releasing *before* the batch risks putting the package back into a
+  review queue and delaying it. Queued for that release:
+  - `README.md`'s credential step says "GitHub sign-in"; Google OAuth
+    shipped 2026-08-29 and the Cloud audience is exactly the crowd without
+    GitHub accounts.
+  - `nodes/Shotium/Shotium.node.json`: add `Marketing & Content` next to
+    `Development`, and point `primaryDocumentation` at
+    `https://shotium.com/integrations/n8n` rather than the generic `/docs`.
+  - The `ogImage` action string reads "open graph"; it should be "Open
+    Graph". Action strings show in the pre-install node detail view.
 
 ## Context-specific docs
 Load these before working on the relevant area:

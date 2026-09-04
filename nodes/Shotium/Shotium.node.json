@@ -2,7 +2,7 @@
 	"node": "n8n-nodes-shotium.shotium",
 	"nodeVersion": "1.0",
 	"codexVersion": "1.0",
-	"categories": ["Development"],
+	"categories": ["Development", "Marketing & Content"],
 	"resources": {
 		"credentialDocumentation": [
 			{
@@ -11,7 +11,7 @@
 		],
 		"primaryDocumentation": [
 			{
-				"url": "https://shotium.com/docs"
+				"url": "https://shotium.com/integrations/n8n"
 			}
 		]
 	}

@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.1.4
+
+- Verified on n8n Cloud (2026-09-04) — README documents Cloud installation from the nodes panel alongside the self-hosted path
+- Credential step now mentions Google sign-in (available since 2026-08-29) next to GitHub
+- Codex: added `Marketing & Content` category; `primaryDocumentation` points at https://shotium.com/integrations/n8n
+
 ## 0.1.3
 
 - Corrected credential documentation to reflect free validation through `GET /v1/me`

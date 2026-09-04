@@ -16,7 +16,9 @@ Shotium is a screenshot and OG image rendering API: turn any URL into a PNG/JPEG
 
 ## Installation
 
-Follow the [installation guide](https://docs.n8n.io/integrations/community-nodes/installation/) in the n8n community nodes documentation.
+**n8n Cloud:** Shotium is a verified community node — search for it in the nodes panel and drag it onto the canvas. If it does not appear, enable *Verified Community Nodes* in your admin panel.
+
+**Self-hosted:** follow the [installation guide](https://docs.n8n.io/integrations/community-nodes/installation/) in the n8n community nodes documentation.
 
 Package name: `n8n-nodes-shotium`
 
@@ -38,7 +40,7 @@ The two render operations output the image as **binary data** (default field: `d
 
 ## Credentials
 
-1. Sign in at [shotium.com/account](https://shotium.com/account) (GitHub sign-in, 100 free render credits — no credit card).
+1. Sign in at [shotium.com/account](https://shotium.com/account) (GitHub or Google sign-in, 100 free render credits — no credit card).
 2. Create an API key. The key (`sk_live_…`), your signing secret and your UID are shown **once**, together.
 3. In n8n, create a **Shotium API** credential and paste the key. The signing secret and UID are only needed for the Generate Signed URL operation — leave them empty otherwise.
 
@@ -58,7 +60,7 @@ Typical patterns:
 
 Rate limit is 60 requests/minute per API key. When quota and credits run out the API returns `429 quota_exceeded` — nothing auto-charges.
 
-For build-time embedding without n8n, see the [Shotium docs](https://shotium.com/docs).
+For build-time embedding without n8n, see the [Shotium docs](https://shotium.com/docs). The [n8n integration page](https://shotium.com/integrations/n8n) covers workflow patterns in more depth.
 
 ## Resources
 
@@ -70,6 +72,7 @@ For build-time embedding without n8n, see the [Shotium docs](https://shotium.com
 
 ## Version history
 
+- **0.1.4** — Verified on n8n Cloud. Documentation now covers Cloud installation and Google sign-in; codex adds the `Marketing & Content` category and links the n8n integration page.
 - **0.1.3** — Corrected credential documentation and hardened the tag-driven OIDC publishing workflow with release metadata checks.
 - **0.1.2** — Codex fixes for n8n verification: fully-qualified `node` identifier, removed unsupported `Developer Tools` category.
 - **0.1.1** — Credential verification moved to the dedicated `GET /v1/me` endpoint (declarative credential test).

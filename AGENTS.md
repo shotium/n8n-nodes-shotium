@@ -120,14 +120,20 @@ the npm tarball ships stale files:
   there.
 - **Updates:** n8n monitors npm and picks up new versions after a quick
   re-review. Every change must be visible in this GitHub repository or n8n
-  cannot verify the version update.
-- 0.1.4 (this release) closed the post-verification queue: main-repo copy
-  (blog post, `/integrations/n8n`, `.agents/product-marketing.md`,
-  changelog) now says "verified", README covers Cloud install and Google
-  sign-in, codex adds `Marketing & Content` and links
-  `https://shotium.com/integrations/n8n`. The "open graph" action string
-  stays lowercase on purpose: the n8n lint rule
+  cannot verify the version update. First exercised with 0.1.4: re-review
+  passed and the version was live on Cloud by 2026-09-06, so the path is
+  confirmed to work without any manual resubmission.
+- **0.1.4 (re-review passed, live 2026-09-06)** closed the post-verification
+  queue: main-repo copy (blog post, `/integrations/n8n`,
+  `.agents/product-marketing.md`, changelog) now says "verified", README
+  covers Cloud install and Google sign-in, codex adds `Marketing & Content`
+  and links `https://shotium.com/integrations/n8n`. The developer-experience
+  feedback n8n asked for (codex `node` identifier lint, silent category
+  drops, partial Node Details carry-over) was sent to the review thread. The
+  "open graph" action string stays lowercase on purpose: the n8n lint rule
   `node-param-operation-option-action-miscased` enforces sentence case.
+- **Open:** integrations page on n8n.io (expected 2-4 weeks after 2026-09-04);
+  nothing to do until it appears except keeping the Node Details form current.
 
 ## Context-specific docs
 Load these before working on the relevant area:

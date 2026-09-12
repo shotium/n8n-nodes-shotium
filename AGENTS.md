@@ -132,8 +132,12 @@ the npm tarball ships stale files:
   drops, partial Node Details carry-over) was sent to the review thread. The
   "open graph" action string stays lowercase on purpose: the n8n lint rule
   `node-param-operation-option-action-miscased` enforces sentence case.
-- **Open:** integrations page on n8n.io (expected 2-4 weeks after 2026-09-04);
-  nothing to do until it appears except keeping the Node Details form current.
+- **Integrations page live** (https://n8n.io/integrations/shotium/, arrived
+  2026-09-12, ahead of the 2-4 week estimate): content matches the Creator
+  Portal submission — Long Form Description, Development/Utility/Marketing
+  categories, logo, GitHub link. No portal fix needed. This closes the
+  post-verification queue; nothing further is expected from n8n unless a new
+  version needs re-review.
 
 ## Context-specific docs
 Load these before working on the relevant area:
